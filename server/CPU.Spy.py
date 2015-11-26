@@ -18,9 +18,24 @@ def cpu_info():
 
     nprocs = 0
 
-    with open('/proc/CPUinfo') as f:
-        for line in f:
-            print(f)
+    with open('/proc/cpuinfo') as f:
+        for line in f.readlines():
+            # print(line)
+            if not line.strip():
+                # end of one processor
+                cpu__info['proc%s'% nprocs] = proc_info
+                nprocs += 1
+                proc_info = OrderedDict()
+            else:
+                if len(line.split(':')) == 2:
+                    proc_info[line.split(':')[0].strip()] = line.split(':')[1].strip()
+                else:
+                    proc_info[line.split(':')[0].strip()] = ''
+    return cpu__info
 
 
-cpu_info()
+if __name__ == '__main__':
+    CPUinfo = cpu_info()
+    print(CPUinfo)
+    for processor in CPUinfo.keys():
+        print(CPUinfo[processor]['model name'])
